@@ -1,0 +1,62 @@
+# DNS Playground
+
+```elixir
+"lib/xdig/protocol.ex"
+|> Path.absname(__DIR__)
+|> Code.require_file()
+```
+
+## Section
+
+```elixir
+dns_message =
+  <<207, 206, 129, 128, 0, 1, 0, 1, 0, 0, 0, 0, 6, 103, 105, 116, 104, 117, 98, 3, 99, 111, 109,
+    0, 0, 1, 0, 1, 192, 12, 0, 1, 0, 1, 0, 0, 0, 60, 0, 4, 140, 82, 121, 3>>
+
+<<dns_header::12-bytes, dns_body::binary>> = dns_message
+```
+
+```elixir
+XDig.Protocol.decode_header(dns_header)
+```
+
+```elixir
+iodata = XDig.Protocol.encode_strings(["elixir-lang", "org"])
+IO.iodata_to_binary(iodata)
+```
+
+## Building a Query Message
+
+```elixir
+message_id = :crypto.strong_rand_bytes(2)
+
+# ID
+query_header =
+  <<
+    message_id::2-binary,
+    # QR
+    0::1,
+    # OPCODE
+    0::4,
+    # AA flag
+    0::1,
+    # TC flag
+    0::1,
+    # RD flag
+    1::1,
+    # RA flag
+    0::1,
+    # Z
+    0::3,
+    # RCODE
+    0::4,
+    # QDCount
+    1::8,
+    # ANCount
+    0::8,
+    # NSCount
+    0::8,
+    # ARCount
+    0::8
+  >>
+```
